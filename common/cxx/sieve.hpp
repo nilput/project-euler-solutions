@@ -9,6 +9,7 @@ class Sieve {
 public:
     Sieve(): max(0), buckets() {
     }
+
     void resieve(long new_max) {
         if (new_max < max || new_max < 2) {
             return;
@@ -19,22 +20,31 @@ public:
             if (buckets[i] != 0) {
                 continue;
             }
-            for (long j=std::max((max / i) + 1, 2L); j<new_max; j++) {
-                long product = i * j;
-                if (product >= new_max) {
-                    break;
-                }
+            long product = i * 2;
+            while (product < new_max) {
                 buckets[product]++;
+                product += i;
             }
         }
         max = new_max;
     }
+
+    std::vector<long> getPrimes() {
+        std::vector<long> r;
+        for (long i=0; i<max; i++) {
+            if (!buckets[i]) r.push_back(i);
+        }
+        return r;
+    }
+
     uint8_t *data() {
         return buckets.data();
     }
+
     size_t length() {
         return max;
     }
+
     bool isPrime(long n) {
         if (n >= max) {
             long m = max;
@@ -45,6 +55,7 @@ public:
         }
         return buckets[n] == 0;
     }
+
     std::string toString() {
         std::stringstream ss;
         for (int i=0; i<max; i++) {
@@ -52,6 +63,7 @@ public:
         }
         return ss.str();
     }
+
 private:
     long max;
     std::vector<uint8_t> buckets; //stores factors count
